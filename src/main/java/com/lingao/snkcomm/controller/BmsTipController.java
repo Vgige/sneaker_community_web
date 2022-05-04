@@ -9,6 +9,7 @@ import com.lingao.snkcomm.service.IBmsTipService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
@@ -24,7 +25,7 @@ public class BmsTipController extends BaseController{
     @Autowired
     private IBmsTipService bmsTipService;
 
-    @GetMapping("/today")
+    @RequestMapping(value = "/today", method = RequestMethod.GET)
     public ApiResult<BmsTip> getRandomTip(){
         BmsTip tipToday = bmsTipService.getRandomTip();
         return ApiResult.success(tipToday);
