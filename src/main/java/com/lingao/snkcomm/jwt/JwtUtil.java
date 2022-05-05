@@ -35,12 +35,15 @@ public class JwtUtil {
     }
 
     public static HttpServletRequest validateTokenAndAddUserIdToHeader(HttpServletRequest request) {
+        //根据Header中的Authorization获取token
         String token = request.getHeader(HEADER_STRING);
         if (token != null) {
             // parse the token.
             try {
                 Map<String, Object> body = Jwts.parser()
+                        //根据秘钥反解密
                         .setSigningKey(SECRET)
+                        //将"Bearer "替换为”“，此格式在前端固定。
                         .parseClaimsJws(token.replace(TOKEN_PREFIX, ""))
                         .getBody();
                 return new CustomHttpServletRequest(request, body);
@@ -59,6 +62,7 @@ public class JwtUtil {
         public CustomHttpServletRequest(HttpServletRequest request, Map<String, ?> claims) {
             super(request);
             this.claims = new HashMap<>();
+            //key: userName value: 当前登录用户名
             claims.forEach((k, v) -> this.claims.put(k, String.valueOf(v)));
         }
 

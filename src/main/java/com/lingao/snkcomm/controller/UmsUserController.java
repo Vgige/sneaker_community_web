@@ -12,7 +12,8 @@ import org.springframework.web.bind.annotation.*;
 import javax.validation.Valid;
 import java.util.HashMap;
 import java.util.Map;
-
+//import static: 导入类下的静态方法或者静态属性且访问控制符不能为private
+import static com.lingao.snkcomm.jwt.JwtUtil.USER_NAME;
 /**
  * @author lingao.
  * @description
@@ -44,5 +45,10 @@ public class UmsUserController extends BaseController{
         Map<String, String> map = new HashMap<>(16);
         map.put("token", token);
         return ApiResult.success(map, "登录成功");
+    }
+    @RequestMapping(value = "/info", method = RequestMethod.GET)
+    public ApiResult<UmsUser> getUser(@RequestHeader(value = USER_NAME) String userName) {
+        UmsUser user = umsUserService.getUserByUsername(userName);
+        return ApiResult.success(user);
     }
 }
