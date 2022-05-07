@@ -9,11 +9,14 @@ import com.lingao.snkcomm.mapper.UmsUserMapper;
 import com.lingao.snkcomm.model.dto.LoginDTO;
 import com.lingao.snkcomm.model.dto.RegisterDTO;
 import com.lingao.snkcomm.model.entity.BmsBillboard;
+import com.lingao.snkcomm.model.entity.BmsPost;
 import com.lingao.snkcomm.model.entity.UmsUser;
+import com.lingao.snkcomm.model.vo.ProfileVO;
 import com.lingao.snkcomm.service.IBmsBillboardService;
 import com.lingao.snkcomm.service.IUmsUserService;
 import com.lingao.snkcomm.utils.MD5Utils;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.ObjectUtils;
@@ -73,5 +76,21 @@ public class UmsUserServiceImpl extends ServiceImpl<UmsUserMapper, UmsUser> impl
             log.warn("用户不存在or密码验证失败=======>{}", dto.getUsername());
         }
         return token;
+    }
+
+    @Override
+    public ProfileVO getUserProfile(String id) {
+        ProfileVO profile = new ProfileVO();
+        UmsUser user = baseMapper.selectById(id);
+        BeanUtils.copyProperties(user, profile);
+        // 用户文章数
+//        int count = bmsTopicMapper.selectCount(new LambdaQueryWrapper<BmsPost>().eq(BmsPost::getUserId, id));
+//        profile.setTopicCount(count);
+
+        // 粉丝数
+//        int followers = bmsFollowMapper.selectCount((new LambdaQueryWrapper<BmsFollow>().eq(BmsFollow::getParentId, id)));
+//        profile.setFollowerCount(followers);
+
+        return profile;
     }
 }

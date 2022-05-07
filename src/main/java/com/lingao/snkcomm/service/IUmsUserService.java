@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.extension.service.IService;
 import com.lingao.snkcomm.model.dto.LoginDTO;
 import com.lingao.snkcomm.model.dto.RegisterDTO;
 import com.lingao.snkcomm.model.entity.UmsUser;
+import com.lingao.snkcomm.model.vo.ProfileVO;
 
 /**
  * @author lingao.
@@ -38,5 +39,5 @@ public interface IUmsUserService extends IService<UmsUser> {
      * @param id 用户ID
      * @return
      */
-//    ProfileVO getUserProfile(String id);
+    ProfileVO getUserProfile(String id);
 }
