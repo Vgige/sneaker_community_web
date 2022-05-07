@@ -1,6 +1,7 @@
 package com.lingao.snkcomm.controller;
 
 import com.lingao.snkcomm.common.api.ApiResult;
+import com.lingao.snkcomm.common.exception.ApiException;
 import com.lingao.snkcomm.model.dto.LoginDTO;
 import com.lingao.snkcomm.model.dto.RegisterDTO;
 import com.lingao.snkcomm.model.entity.UmsUser;
@@ -27,7 +28,12 @@ public class UmsUserController extends BaseController{
 
     @RequestMapping(value = "/register", method = RequestMethod.POST)
     public ApiResult<Map<String, Object>> register(@Valid @RequestBody RegisterDTO dto) {
-        UmsUser user = umsUserService.executeRegister(dto);
+        UmsUser user = null;
+        try{
+            user = umsUserService.executeRegister(dto);
+        }catch (ApiException e){
+            return ApiResult.failed(e.getMessage());
+        }
         if (ObjectUtils.isEmpty(user)) {
             return ApiResult.failed("账号注册失败");
         }
