@@ -12,6 +12,7 @@ import com.lingao.snkcomm.service.IUmsUserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.Map;
 
 import static com.lingao.snkcomm.jwt.JwtUtil.USER_NAME;
@@ -50,5 +51,10 @@ public class BmsPostController extends BaseController{
     public ApiResult<Map<String, Object>> view(@RequestParam("id") String id) {
         Map<String, Object> map = bmsPostService.viewTopic(id);
         return ApiResult.success(map);
+    }
+    @RequestMapping(value = "/recommend", method = RequestMethod.GET)
+    public ApiResult<List<BmsPost>> getRecommend(@RequestParam("topicId") String id) {
+        List<BmsPost> topics = bmsPostService.getRecommend(id);
+        return ApiResult.success(topics);
     }
 }
