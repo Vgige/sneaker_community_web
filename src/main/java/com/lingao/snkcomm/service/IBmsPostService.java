@@ -46,4 +46,25 @@ public interface IBmsPostService extends IService<BmsPost>{
      * @return
      */
     List<BmsPost> getRecommend(String id);
+    /**
+     * 根据标签名查询帖子
+     *
+     * @param page
+     * @param id
+     * @return
+     */
+    Page<PostVO> getListByTag(Page<PostVO> page, String id);
+    /**
+     * 关键字检索
+     *
+     * @param keyword
+     * @param page
+     * @return
+     */
+    Page<PostVO> searchByKey(String keyword, Page<PostVO> page);
+    /**
+     * 删除帖子
+     *
+     */
+    void deletePost(UmsUser umsUser, String id);
 }

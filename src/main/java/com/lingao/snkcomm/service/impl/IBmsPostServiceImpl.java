@@ -2,18 +2,20 @@ package com.lingao.snkcomm.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.extension.conditions.query.LambdaQueryChainWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.lingao.snkcomm.common.api.ApiResult;
 import com.lingao.snkcomm.common.exception.ApiAsserts;
 import com.lingao.snkcomm.common.exception.ApiException;
+import com.lingao.snkcomm.mapper.BmsTagMapper;
 import com.lingao.snkcomm.mapper.BmsTopicMapper;
+import com.lingao.snkcomm.mapper.UmsUserMapper;
 import com.lingao.snkcomm.model.dto.CreateTopicDTO;
-import com.lingao.snkcomm.model.entity.BmsPost;
-import com.lingao.snkcomm.model.entity.BmsTag;
-import com.lingao.snkcomm.model.entity.BmsTopicTag;
-import com.lingao.snkcomm.model.entity.UmsUser;
+import com.lingao.snkcomm.model.entity.*;
 import com.lingao.snkcomm.model.vo.PostVO;
 import com.lingao.snkcomm.model.vo.ProfileVO;
+import com.lingao.snkcomm.service.IBmsCommentService;
 import com.lingao.snkcomm.service.IBmsPostService;
 import com.lingao.snkcomm.service.IBmsTopicTagService;
 import com.lingao.snkcomm.service.IUmsUserService;
@@ -40,6 +42,12 @@ public class IBmsPostServiceImpl extends ServiceImpl<BmsTopicMapper, BmsPost> im
     private IBmsTagServiceImpl bmsTagService;
     @Autowired
     private IUmsUserService umsUserService;
+    @Autowired
+    private UmsUserMapper umsUserMapper;
+    @Autowired
+    private IBmsCommentService bmsCommentService;
+    @Autowired
+    private BmsTagMapper bmsTagMapper;
 
     @Override
     public Page<PostVO> getList(Page<PostVO> page, String tab) {
@@ -68,8 +76,8 @@ public class IBmsPostServiceImpl extends ServiceImpl<BmsTopicMapper, BmsPost> im
         this.baseMapper.insert(topic);
 
         // 用户积分增加
-//        int newScore = user.getScore() + 1;
-//        umsUserMapper.updateById(user.setScore(newScore));
+        int newScore = user.getScore() + 1;
+        umsUserMapper.updateById(user.setScore(newScore));
 
         // 标签
         if (!ObjectUtils.isEmpty(dto.getTags())) {
@@ -114,25 +122,45 @@ public class IBmsPostServiceImpl extends ServiceImpl<BmsTopicMapper, BmsPost> im
     public List<BmsPost> getRecommend(String id) {
         return this.baseMapper.selectRecommend(id);
     }
-//    @Override
-//    public Page<PostVO> searchByKey(String keyword, Page<PostVO> page) {
-//        // 查询话题
-//        Page<PostVO> iPage = this.baseMapper.searchByKey(page, keyword);
-//        // 查询话题的标签
-//        setTopicTags(iPage);
-//        return iPage;
-//    }
-//
-//    private void setTopicTags(Page<PostVO> iPage) {
-//        iPage.getRecords().forEach(topic -> {
-//            List<BmsTopicTag> topicTags = IBmsTopicTagService.selectByTopicId(topic.getId());
-//            if (!topicTags.isEmpty()) {
-//                List<String> tagIds = topicTags.stream().map(BmsTopicTag::getTagId).collect(Collectors.toList());
-//                List<BmsTag> tags = bmsTagMapper.selectBatchIds(tagIds);
-//                topic.setTags(tags);
-//            }
-//        });
-//    }
+
+    @Override
+    public Page<PostVO> searchByKey(String keyword, Page<PostVO> page) {
+        // 查询话题
+        Page<PostVO> iPage = this.baseMapper.searchByKey(page, keyword);
+        // 查询话题的标签
+        this.setTopicTags(iPage);
+        return iPage;
+    }
+
+    @Override
+    @Transactional(rollbackFor = ApiException.class)
+    public void deletePost(UmsUser umsUser, String id) {
+        BmsPost byId = this.getById(id);
+        if(ObjectUtils.isEmpty(byId)){
+            ApiAsserts.fail("来晚一步，话题已不存在");
+        }
+        if(!byId.getUserId().equals(umsUser.getId())){
+            ApiAsserts.fail("非本人无权删除");
+        }
+        this.removeById(id);
+        bmsCommentService.remove(new LambdaQueryWrapper<BmsComment>().eq(BmsComment::getTopicId, byId.getId()));
+        List<BmsTopicTag> bmsTopicTags = bmsTopicTagService.selectByTopicId(byId.getId());
+        bmsTopicTagService.remove(new LambdaQueryWrapper<BmsTopicTag>().eq(BmsTopicTag::getTopicId, byId.getId()));
+        if(!ObjectUtils.isEmpty(bmsTopicTags)){
+            List<String> tagIds = bmsTopicTags.stream().map(BmsTopicTag::getTagId).collect(Collectors.toList());
+            for (String tagId : tagIds) {
+                BmsTag bmsTag = bmsTagMapper.selectById(tagId);
+                if(!ObjectUtils.isEmpty(bmsTag)){
+                    if(bmsTag.getTopicCount()>0){
+                        bmsTag.setTopicCount(bmsTag.getTopicCount()-1);
+                        bmsTagMapper.updateById(bmsTag);
+                    }
+
+                }
+            }
+        }
+
+    }
 
     private void setTopicTags(Page<PostVO> iPage) {
         iPage.getRecords().forEach(topic -> {
@@ -143,6 +171,14 @@ public class IBmsPostServiceImpl extends ServiceImpl<BmsTopicMapper, BmsPost> im
                 topic.setTags(tags);
             }
         });
+    }
+    @Override
+    public Page<PostVO> getListByTag(Page<PostVO> page, String id) {
+        // 查询话题
+        Page<PostVO> iPage = baseMapper.selectListByTagName(page, id);
+        // 查询话题的标签
+        this.setTopicTags(iPage);
+        return iPage;
     }
 
 }

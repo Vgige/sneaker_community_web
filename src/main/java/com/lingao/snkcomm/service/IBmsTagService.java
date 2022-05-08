@@ -21,7 +21,7 @@ public interface IBmsTagService extends IService<BmsTag> {
      * @param id
      * @return
      */
-//    Page<BmsPost> selectTopicsByTagId(Page<BmsPost> topicPage, String id);
+    Page<BmsPost> selectTopicsByTagId(Page<BmsPost> topicPage, String id);
 
     List<BmsTag> selectBatchIds(List<String> tagIds);
 

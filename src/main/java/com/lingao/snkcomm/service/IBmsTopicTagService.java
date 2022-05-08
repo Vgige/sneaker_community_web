@@ -5,6 +5,7 @@ import com.lingao.snkcomm.model.entity.BmsTag;
 import com.lingao.snkcomm.model.entity.BmsTopicTag;
 
 import java.util.List;
+import java.util.Set;
 
 /**
  * @author lingao.
@@ -28,4 +29,11 @@ public interface IBmsTopicTagService extends IService<BmsTopicTag> {
      * @return
      */
     void createTopicTag(String id, List<BmsTag> tags);
+    /**
+     * 根据标签获取话题ID集合
+     *
+     * @param id
+     * @return
+     */
+    Set<String> selectTopicIdsByTagId(String id);
 }

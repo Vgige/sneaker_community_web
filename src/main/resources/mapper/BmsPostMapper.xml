@@ -29,7 +29,7 @@
         <where>
             <if test="tab == 'hot'">
                 date(t.create_time) &lt;= date_add(curdate(), interval 1 day)
-                and date(t.create_time) &gt;= date_sub(curdate(), interval 7 day)
+                and date(t.create_time) &gt;= date_sub(curdate(), interval 30 day)
             </if>
         </where>
         <if test="tab != 'hot'">
@@ -66,13 +66,25 @@
         LEFT JOIN ums_user u
         ON t.user_id = u.id
         <where>
-            <if test="keyword!=null">
+            <if test="keyword != null and keyword != ''">
                 and t.title like CONCAT('%','${keyword}')
                 or t.title like CONCAT('${keyword}','%')
                 or t.title like CONCAT('%','${keyword}','%')
                 or t.title = #{keyword}
             </if>
         </where>
+        order by t.view desc, t.create_time desc
+    </select>
+    <select id="selectListByTagName" resultMap="topicVO">
+        SELECT
+        t.id,t.title,t.user_id,t.comments,
+        t.view,t.collects,t.top,t.essence,
+        t.create_time ,t.modify_time ,
+        u.username,u.alias, u.avatar
+        FROM bms_post t
+        LEFT JOIN bms_post_tag pt ON pt.topic_id = t.id
+        LEFT JOIN ums_user u ON t.user_id = u.id
+        WHERE pt.tag_id = #{id}
         order by t.view desc, t.create_time desc
     </select>
 </mapper>

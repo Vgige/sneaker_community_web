@@ -9,6 +9,7 @@ import com.lingao.snkcomm.model.entity.BmsTag;
 import com.lingao.snkcomm.service.IBmsPostService;
 import com.lingao.snkcomm.service.IBmsTagService;
 import com.lingao.snkcomm.service.IBmsTopicTagService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -22,15 +23,19 @@ import java.util.Set;
  */
 @Service
 public class IBmsTagServiceImpl extends ServiceImpl<BmsTagMapper, BmsTag> implements IBmsTagService {
-//    @Override
-//    public Page<BmsPost> selectTopicsByTagId(Page<BmsPost> topicPage, String id) {
-//        // 获取关联的话题ID
-//        Set<String> ids = IBmsTopicTagService.selectTopicIdsByTagId(id);
-//        LambdaQueryWrapper<BmsPost> wrapper = new LambdaQueryWrapper<>();
-//        wrapper.in(BmsPost::getId, ids);
-//
-//        return IBmsPostService.page(topicPage, wrapper);
-//    }
+    @Autowired
+    private IBmsTopicTagService bmsTopicTagService;
+    @Autowired
+    private IBmsPostService bmsPostService;
+    @Override
+    public Page<BmsPost> selectTopicsByTagId(Page<BmsPost> topicPage, String id) {
+        // 获取关联的话题ID
+        Set<String> ids = bmsTopicTagService.selectTopicIdsByTagId(id);
+        LambdaQueryWrapper<BmsPost> wrapper = new LambdaQueryWrapper<>();
+        wrapper.in(BmsPost::getId, ids);
+
+        return bmsPostService.page(topicPage, wrapper);
+    }
     @Override
     public List<BmsTag> insertTags(List<String> tagNames) {
         List<BmsTag> tagList = new ArrayList<>();

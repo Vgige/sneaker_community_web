@@ -81,14 +81,15 @@ public class BmsPostController extends BaseController{
     @RequestMapping(value = "/delete/{id}", method = RequestMethod.DELETE)
     public ApiResult<String> delete(@RequestHeader(value = USER_NAME) String userName, @PathVariable("id") String id) {
         UmsUser umsUser = umsUserService.getUserByUsername(userName);
-        BmsPost byId = bmsPostService.getById(id);
-        if(ObjectUtils.isEmpty(byId)){
-            return ApiResult.failed("来晚一步，话题已不存在");
-        }
-        if(!byId.getUserId().equals(umsUser.getId())){
-            return ApiResult.failed("非本人无权删除");
-        }
-        bmsPostService.removeById(id);
+        bmsPostService.deletePost(umsUser,id);
         return ApiResult.success(null,"删除成功");
+    }
+
+    @RequestMapping(value = "/search", method = RequestMethod.GET)
+    public ApiResult<Page<PostVO>> searchList(@RequestParam("keyword") String keyword,
+                                              @RequestParam("pageNum") Integer pageNum,
+                                              @RequestParam("pageSize") Integer pageSize) {
+        Page<PostVO> results = bmsPostService.searchByKey(keyword, new Page<>(pageNum, pageSize));
+        return ApiResult.success(results);
     }
 }
