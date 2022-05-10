@@ -2,17 +2,19 @@ server:
   port: 8008
 
 web:
-  domain: http://localhost
+  domain: http://120.76.45.215
 
 spring:
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
-    username: root
+    username: lingao
     password: 123456
-    url: jdbc:mysql://localhost:3306/snkcomm?useUnicode=true&characterEncoding=utf8&autoReconnect=true&serverTimezone=GMT%2B8
+    url: jdbc:mysql://120.76.45.215:3306/snkcomm?useUnicode=true&characterEncoding=utf8&autoReconnect=true&serverTimezone=GMT%2B8
     type: com.zaxxer.hikari.HikariDataSource
 
 logging:
   level:
     root: info
     com.lingao.snkcomm: info
+file:
+  uploadurl: "/www/server/jar/upload/"

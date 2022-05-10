@@ -22,6 +22,10 @@ public class CommentVO {
 
     private String username;
 
+    private String alias;
+
+    private String avatar;
+
     private Date createTime;
 
 }

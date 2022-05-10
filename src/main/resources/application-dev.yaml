@@ -16,3 +16,5 @@ logging:
   level:
     root: info
     com.lingao.snkcomm: debug
+file:
+  uploadurl: "E:/IdeaProjects/sneaker_community_project/sneaker_community_web/upload/"
