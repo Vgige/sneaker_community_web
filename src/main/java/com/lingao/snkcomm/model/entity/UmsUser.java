@@ -7,6 +7,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.experimental.Accessors;
+import org.springframework.beans.factory.annotation.Value;
 
 import java.io.Serializable;
 import java.util.Date;
@@ -40,7 +41,8 @@ public class UmsUser implements Serializable {
 
     @Builder.Default
     @TableField("avatar")
-    private String avatar = "https://s3.ax1x.com/2020/12/01/DfHNo4.jpg";
+    @Value("${avatar.url}")
+    private String avatar = "http://120.76.45.215:8008/upload/1523495233448628225.png";
 
     @TableField("email")
     private String email;

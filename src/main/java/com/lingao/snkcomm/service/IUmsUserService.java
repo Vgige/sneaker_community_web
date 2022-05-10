@@ -40,4 +40,16 @@ public interface IUmsUserService extends IService<UmsUser> {
      * @return
      */
     ProfileVO getUserProfile(String id);
+    /**
+     * 向指定邮箱发送验证码
+     *
+     * @param email 邮箱号
+     */
+    void sendMailCode(String email);
+    /**
+     * 查看邮箱是否存在
+     *
+     * @param email 邮箱号
+     */
+    boolean registerEmailExist(String email);
 }

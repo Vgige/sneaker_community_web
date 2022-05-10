@@ -11,10 +11,46 @@ spring:
     password: 123456
     url: jdbc:mysql://localhost:3306/snkcomm?useUnicode=true&characterEncoding=utf8&autoReconnect=true&serverTimezone=GMT%2B8
     type: com.zaxxer.hikari.HikariDataSource
+  mail:
+    sendname: "『一个社区』"
+    username: 1634202401@qq.com
+    password: vzdhrtcjlybudgjc
+    host: smtp.qq.com
+    default-encoding: UTF-8   #配置邮件编码
+    protocol: smtp   #协议
+    properties:
+      mail:
+        smtp:
+          starttls:
+            enable: true
+            required: true
+          ssl:
+            enable: true
+
+  redis:
+    #数据库索引
+    database: 0
+    host: 127.0.0.1
+    port: 6379
+    password: null
+    lettuce:
+      pool:
+        max-wait: 100
+        max-active: 200   #连接池的最大连接数
+        max-idle: 10  #最大空闲数
+        min-idle: -1 #初始化连接数
+#邮箱验证码有效时间/秒
+code:
+  expiration: 300
 
 logging:
   level:
     root: info
     com.lingao.snkcomm: debug
+
+#头像上传地址
 file:
   uploadurl: "E:/IdeaProjects/sneaker_community_project/sneaker_community_web/upload/"
+#头像默认地址
+avatar:
+  url: "http://localhost:8000/upload/1523495233448628225.png"

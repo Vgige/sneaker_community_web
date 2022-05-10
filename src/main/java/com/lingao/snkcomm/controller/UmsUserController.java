@@ -8,6 +8,7 @@ import com.lingao.snkcomm.model.dto.LoginDTO;
 import com.lingao.snkcomm.model.dto.RegisterDTO;
 import com.lingao.snkcomm.model.entity.BmsPost;
 import com.lingao.snkcomm.model.entity.UmsUser;
+import com.lingao.snkcomm.model.vo.ProfileVO;
 import com.lingao.snkcomm.service.IBmsPostService;
 import com.lingao.snkcomm.service.IUmsUserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -47,6 +48,16 @@ public class UmsUserController extends BaseController{
         return ApiResult.success(map);
     }
 
+    @RequestMapping(value = "/getEmailCode", method = RequestMethod.GET)
+    public ApiResult<Object> getEmailCode(@RequestParam("email") String email) {
+        try {
+            umsUserService.sendMailCode(email);
+        }catch (ApiException e){
+            return ApiResult.failed(e.getMessage());
+        }
+        return ApiResult.success(null, "发送成功");
+    }
+
     @RequestMapping(value = "/login", method = RequestMethod.POST)
     public ApiResult<Map<String, String>> login(@Valid @RequestBody LoginDTO dto) {
         String token = null;
@@ -78,9 +89,10 @@ public class UmsUserController extends BaseController{
         if(ObjectUtils.isEmpty(user)){
             return ApiResult.failed("用户不存在");
         }
+        ProfileVO userProfile = umsUserService.getUserProfile(user.getId());
         Page<BmsPost> page = bmsPostService.page(new Page<>(pageNo, size),
                 new LambdaQueryWrapper<BmsPost>().eq(BmsPost::getUserId, user.getId()));
-        map.put("user", user);
+        map.put("user", userProfile);
         map.put("topics", page);
         return ApiResult.success(map);
     }

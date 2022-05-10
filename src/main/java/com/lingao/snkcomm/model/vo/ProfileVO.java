@@ -30,6 +30,16 @@ public class ProfileVO {
     private String avatar;
 
     /**
+     * 积分
+     */
+    private Integer score;
+
+    /**
+     * 个人简介
+     */
+    private String bio;
+
+    /**
      * 关注数
      */
     private Integer followCount;
